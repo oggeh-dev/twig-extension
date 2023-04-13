@@ -1,0 +1,10 @@
+# Remember to uncomment rewrite settings at `index.php` before activating this file, in addition to all URLs in your template files (including javascript if necessary)
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !(\.php)$
+RewriteRule . index.php [L]
+</IfModule>

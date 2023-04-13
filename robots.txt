@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /assets
+Disallow: /images
+Disallow: /tmp
+Disallow: /tpl
+Disallow: /vendor

@@ -1,0 +1,68 @@
+{# Import global wrapper #}
+{% extends 'api.twig' %}
+
+{% block api %}
+    
+    {# Fetch response from method alias `app` to be used accross all blocks #}
+    {% set app = get('app') %}
+
+    {# Reuse common blocks (i.e. header and footer) #}
+    {% use 'blocks.twig' %}
+
+    {# Print header block #}
+    {{ block('header') }}
+
+    {# Print content block #}
+    {% block content  %}
+
+                            <section>
+                                <header class="main">
+                                    <h1>{{ trans('showing-results-for') }} &ldquo;{{ child_id|url_decode }}&rdquo;</h1>
+                                </header>
+                                <div class="row">
+                                    {# Fetch response from method alias `search` #}
+                                    {% set search = get('search') %}
+                                    <!-- begin of :: search results -->
+                                    {% if search|length > 0 %}
+                                        {% for result in search %}
+                                            {% if result.target == 'pages' %}
+                                                {% for item in result.items %}
+                                                    <article class="6u">
+                                                        <i>{{ trans('page') }}</i>
+                                                        <h2>
+                                                            {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                                            {#<a href="/{{ lang }}/page/{{ item.key }}">{{ item.subject }}</a>#}
+                                                            <a href="?lang={{ lang }}&module=page&param1={{ item.key }}">{{ item.subject }}</a>
+                                                        </h2>
+                                                        <p>{{ item.header }}</p>
+                                                    </article>
+                                                {% endfor %}
+                                            {% elseif result.target == 'news' %}
+                                                {% for item in result.items %}
+                                                    <article class="6u">
+                                                        <i>{{ trans('news') }}</i>
+                                                        <h2>
+                                                            {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                                            {#<a href="/{{ lang }}/news/{{ item.timestamp }}">{{ item.subject }}</a>#}
+                                                            <a href="?lang={{ lang }}&module=news&param1={{ item.timestamp }}">{{ item.subject }}</a>
+                                                        </h2>
+                                                        <p>{{ item.header }}</p>
+                                                    </article>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <article class="6u">
+                                            <blockquote><i>{{ trans('search-not-found') }}</i></blockquote>
+                                        </article>
+                                    {% endif %}
+                                    <!-- begin of :: search results -->
+                                </div>
+                            </section>
+
+    {% endblock %}
+
+    {# Print footer block #}
+    {{ block('footer') }}
+
+{% endblock %}

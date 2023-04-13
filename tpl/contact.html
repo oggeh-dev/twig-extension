@@ -1,0 +1,90 @@
+{# Import global wrapper #}
+{% extends 'api.twig' %}
+
+{% block api %}
+    
+    {# Fetch response from method alias `app` to be used accross all blocks #}
+    {% set app = get('app') %}
+
+    {# Reuse common blocks (i.e. header and footer) #}
+    {% use 'blocks.twig' %}
+
+    {# Print header block #}
+    {{ block('header') }}
+
+    {# Print content block #}
+    {% block content  %}
+
+                            <section>
+                                <header class="main">
+                                    <h1>{{ trans('contact-us') }}</h1>
+                                </header>
+                                <!-- begin of :: contact locations -->
+                                {% set locations = get('locations') %}
+                                <div class="map-container">
+                                    {% for location in locations %}
+                                        <div class="location">
+                                            <p data-latitude="{{ location.latitude }}" data-longitude="{{  location.longitude }}" data-address="{{ location.address }}"></p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <!-- end of :: contact locations -->
+                                <div class="row">
+                                    <div class="6u 12u$(small)">
+                                        <ul class="alt">
+                                            <!-- begin of :: contact addresses -->
+                                            {% for location in locations %}
+                                                <li>{{ location.address }}</li>
+                                            {% endfor %}
+                                            <!-- end of :: contact addresses -->
+                                        </ul>
+                                    </div>
+                                    <div class="6u 12u$(small)">
+                                        <div class="row uniform">
+                                            <form method="post" action="https://api.oggeh.com?api_key=57ff136718d176aae148c8ce9aaf6817&lang={{ lang }}" class="form-email" data-success="{{ trans('form-success') }}" data-error="{{ trans('form-error') }}">
+                                                <input type="hidden" name="method" value="post.contact.form">
+                                                <input type="hidden" name="key" value="contact">
+                                                {# Fetch response from method alias `token` #}
+                                                {% set token = get('token') %}
+                                                <!-- begin of :: contact form token -->
+                                                <input type="hidden" name="token" value="{{ token }}">
+                                                <!-- end of :: contact form token -->
+                                                <div class="12u">
+                                                    <div class="select-wrapper">
+                                                      <select name="to">
+                                                        <!-- begin of :: contact form email list -->
+                                                        {% set contacts = get('contacts') %}
+                                                        {% for contact in contacts %}
+                                                            <option value="{{ contact.email }}">{{ contact.name }}</option>
+                                                        {% endfor %}
+                                                        <!-- end of :: contact form email list -->
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="12u">
+                                                    <label>{{ trans('your-name') }}:</label>
+                                                    <input type="text" name="name" class="validate-required">
+                                                </div>
+                                                <div class="12u">
+                                                    <label>{{ trans('email-address') }}:</label>
+                                                    <input type="email" name="email" class="validate-required validate-email">
+                                                </div>
+                                                <div class="12u">
+                                                    <label>{{ trans('message') }}:</label>
+                                                    <textarea rows="3" name="message" class="validate-required"></textarea>
+                                                </div>
+                                                <div class="12u">
+                                                    <input type="submit" value="{{ trans('send-inquiry') }}" class="special" />
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+    {% endblock %}
+
+    {# Print footer block #}
+    {{ block('footer') }}
+
+{% endblock %}

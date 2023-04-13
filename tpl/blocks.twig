@@ -1,0 +1,226 @@
+{# Define a header block to be used later on each module template #}
+{% block header  %}
+
+<!DOCTYPE html>
+<!--
+    Editorial by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+    Modified by OGGEH Cloud Computing
+    dev.oggeh.com
+-->
+<html lang="{{ lang }}" dir="{{ dir }}">
+    <head>
+        <meta charset="utf-8">
+        <!-- begin of :: app title -->
+        <title>{{ app.title }}</title>
+        <!-- begin of :: app title -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <!-- begin of :: app meta -->
+        <meta name="keywords" content="{{ app.meta.keywords }}">
+        <meta name="description" content="{{ app.meta.description }}">
+        <!-- end of :: end meta -->
+        <link rel="stylesheet" href="assets/css/flag-icon.min.css?v={{ uid }}" />
+        <link rel="stylesheet" href="assets/css/kctoggle.css?v={{ uid }}" />
+        <link rel="stylesheet" href="assets/css/lightbox.css?v={{ uid }}" />
+        <link rel="stylesheet" href="assets/css/datepicker.css?v={{ uid }}" />
+        <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js?v={{ uid }}"></script><![endif]-->
+        <link rel="stylesheet" href="assets/css/main.css?v={{ uid }}" />
+        <link rel="stylesheet" href="assets/css/lang.{{ lang }}.css?v={{ uid }}" />
+        <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css?v={{ uid }}" /><![endif]-->
+        <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css?v={{ uid }}" /><![endif]-->
+        <!--[if lt IE 9]> <script src="assets/js/html5shiv.js?v={{ uid }}"></script> <![endif]-->
+        <script async src="//www.googletagmanager.com/gtag/js?id=UA-51217307-7"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'UA-51217307-7');
+        </script>
+    </head>
+    <body>
+        <!-- Wrapper -->
+        <div id="wrapper">
+            <!-- Main -->
+            <div id="main">
+                <div class="inner">
+
+                    <!-- Header -->
+                        <header id="header">
+                            {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                            {#<a href="/{{ lang }}" class="logo">#}
+                            <a href="?lang={{ lang }}" class="logo">
+                                <!-- begin of :: app title -->
+                                {{ app.title }}
+                                <!-- end of :: app title -->
+                            </a>
+                            <!-- begin of :: app social links -->
+                            <ul class="icons">
+                                {% for key, value in app.social %}
+                                <li><a href="{{ value }}" class="icon fa-{{ key }}"><span class="label">{{ key }}</span></a></li>
+                                {% endfor %}
+                            </ul>
+                            <!-- end of :: app social links -->
+                        </header>
+
+{% endblock %}
+
+{# Define a footer block to be used later on each module template #}
+{% block footer  %}
+
+                    <!-- Sidebar -->
+                    <div id="sidebar">
+                        <div class="inner">
+
+                            <!-- Search -->
+                                <section id="search" class="alt">
+                                    <form method="post" action="#">
+                                        <input type="text" name="keyword" placeholder="Search" />
+                                    </form>
+                                </section>
+
+                            <!-- Menu -->
+                                <nav id="menu">
+                                    <header class="major">
+                                        <h2>{{ trans('menu') }}</h2>
+                                    </header>
+                                    <ul>
+                                        <!-- begin of :: app navigation -->
+                                        <li class="{% if module == 'home' %}active{% endif %}">
+                                            {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                            {#<a href="/{{ lang }}/" class="{% if module == 'home' %}active{% endif %}">{{ trans('home') }}</a>#}
+                                            <a href="?lang={{ lang }}" class="{% if module == 'home' %}active{% endif %}">{{ trans('home') }}</a>
+                                        </li>
+                                        {% set nav = get('nav') %}
+                                        {% if nav|length > 0 %}
+                                            {% for item in nav %}
+                                                {% if item.childs|length > 0 %}
+                                                    {% include 'navitem.html' with {'lang': lang, 'child_id': child_id, 'subject': item.subject, 'childs': item.childs} %}
+                                                {% else %}
+                                            <li class="{% if child_id == item.key %}active{% endif %}">
+                                                {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                                {#<a href="/{{ lang }}/page/{{ item.key }}">{{ item.subject|raw }}</a>#}
+                                                <a href="?lang={{ lang }}&module=page&param1={{ item.key }}">{{ item.subject|raw }}</a>
+                                            </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        <li class="{% if module == 'album' %}active{% endif %}">
+                                            {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                            {#<a href="/{{ lang }}/album" class="{% if module == 'album' %}active{% endif %}">{{ trans('album') }}</a>#}
+                                            <a href="?lang={{ lang }}&module=album" class="{% if module == 'album' %}active{% endif %}">{{ trans('album') }}</a>
+                                        </li>
+                                        <li class="{% if module == 'news' %}active{% endif %}">
+                                            {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                            {#<a href="/{{ lang }}/news" class="{% if module == 'news' %}active{% endif %}">{{ trans('all-news') }}</a>#}
+                                            <a href="?lang={{ lang }}&module=news" class="{% if module == 'news' %}active{% endif %}">{{ trans('all-news') }}</a>
+                                        </li>
+                                        <li class="{% if module == 'contact' %}active{% endif %}">
+                                            {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                            {#<a href="/{{ lang }}/contact" class="{% if module == 'contact' %}active{% endif %}">{{ trans('contact-us') }}</a>#}
+                                            <a href="?lang={{ lang }}&module=contact" class="{% if module == 'contact' %}active{% endif %}">{{ trans('contact-us') }}</a>
+                                        </li>
+                                        <!-- end of :: app navigation -->
+                                    </ul>
+                                </nav>
+
+                            <!-- Section -->
+                                <section>
+                                    <!-- begin of :: page subject,header for page key `request-a-quote`  -->
+                                    {% set quote = get('quote') %}
+                                    <header class="major">
+                                        <h2>{{ quote.subject }}</h2>
+                                    </header>
+                                    <p>{{ quote.header }}</p>
+                                    <ul class="actions">
+                                        <li>
+                                            {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                            {#<a href="/{{ lang }}/page/{{ quote.key }}" class="button special">{{ trans('submit') }}</a>#}
+                                            <a href="?lang={{ lang }}&module=page&param1={{ quote.key }}" class="button special">{{ trans('submit') }}</a>
+                                        </li>
+                                    </ul>
+                                    <!-- end of :: page subject,header for page key `request-a-quote`  -->
+                                </section>
+
+                            <!-- Section -->
+                                <section>
+                                    <header class="major">
+                                        <h2>{{ trans('get-in-touch') }}</h2>
+                                    </header>
+                                    <ul class="contact">
+                                        <!-- begin of :: contact addresses -->
+                                        {% set locations = get('locations') %}
+                                        {% if locations|length > 0 %}
+                                            {% for location in locations %}
+                                            <li class="fa-home">{{ location.address }}</li>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <!-- end of :: contact addresses -->
+                                    </ul>
+                                    <ul class="contact">
+                                        <!-- begin of :: contact addresses -->
+                                        {% set contacts = get('contacts') %}
+                                        {% if contacts|length > 0 %}
+                                            {% for contact in contacts %}
+                                            <li class="fa-envelope-o"><a href="mailto:{{ contact.email }}">{{ contact.name }}</a></li>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <!-- end of :: contact addresses -->
+                                    </ul>
+                                </section>
+
+                            <!-- Section -->
+                                <section>
+                                    <!-- begin of :: app languages -->
+                                    {% if app.languages|length > 0 %}
+                                        {% set unique = [] %}
+                                        {% for ln in app.languages %}
+                                            {% if ln not in unique %}
+                                                {% set unique = unique|merge([ln]) %}
+                                                <p class="lang">
+                                                    {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                                    {#% set key = '/' ~ lang ~ '/' %}
+                                                    {% set val = '/' ~ ln ~ '/' %}
+                                                    {% set url = uri|replace({(key): (val)}) %}
+                                                    {% set url = (url != '/') ? url : '/' ~ ln %#}
+                                                    {% set key = '?lang=' ~ lang %}
+                                                    {% set val = '?lang=' ~ ln %}
+                                                    {% set url = uri|replace({(key): (val)}) %}
+                                                    {% set url = (url != '/') ? url : '?lang=' ~ ln %}
+                                                    <a href="{{ url }}">
+                                                        {% set fl = flag(ln) %}
+                                                        <span class="flag-icon flag-icon-{{ fl }}"></span>
+                                                    </a>
+                                                </p>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    <!-- end of :: app languages -->
+                                </section>
+
+                            <!-- Footer -->
+                                <footer id="footer">
+                                    <p class="copyright">&copy; <!-- begin of :: app title -->{{ app.title }}<!-- end of :: app title -->. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>. Power: <a href="http://dev.oggeh.com" rel="designer">OGGEH Developers</a>. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+                                </footer>
+
+                        </div>
+                    </div>
+
+            </div>
+
+        <!-- Scripts -->
+        <script src="//maps.google.com/maps/api/js?key=AIzaSyAr3-o4zl1K5IeZsAKImlqtGx9rNTGcWDA" type="text/javascript"></script>
+        <script src="assets/js/hmac-sha512.js?v={{ uid }}"></script>
+        <script src="assets/js/jquery.min.js?v={{ uid }}"></script>
+        <script src="assets/js/lightbox.min.js?v={{ uid }}"></script>
+        <script src="assets/js/kctoggle.js?v={{ uid }}"></script>
+        <script src="assets/js/datepicker.min.js?v={{ uid }}"></script>
+        <script src="assets/js/skel.min.js?v={{ uid }}"></script>
+        <script src="assets/js/util.js?v={{ uid }}"></script>
+        <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js?v={{ uid }}"></script><![endif]-->
+        <script src="assets/js/main.js?v={{ uid }}"></script>
+
+    </body>
+</html>
+
+{% endblock %}

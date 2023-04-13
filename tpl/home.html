@@ -1,0 +1,114 @@
+{# Import global wrapper #}
+{% extends 'api.twig' %}
+
+{% block api %}
+    
+    {# Fetch response from method alias `app` to be used accross all blocks #}
+    {% set app = get('app') %}
+
+    {# Reuse common blocks (i.e. header and footer) #}
+    {% use 'blocks.twig' %}
+
+    {# Print header block #}
+    {{ block('header') }}
+
+    {# Print content block #}
+    {% block content  %}
+
+                                    <!-- Slider -->
+                                    <section id="slider" class="is-loading-0 is-loading-1 is-loading-2 fullscreen">
+                                        <div id="slider-wrapper">
+                                            <div id="thumbnails">
+                                                {# Fetch response from method alias `slider` #}
+                                                {% set slider = get('slider') %}
+                                                <!-- begin of :: active slider album  -->
+                                                {% for slide in slider %}
+                                                    <div>
+                                                        <a class="thumbnail" href="{{ slide.original.url }}" data-position="center center"><img src="{{ slide.thumbnail.url }}" alt="{{ slide.caption.title }}" /></a>
+                                                        <h2>{{ slide.caption.title }}</h2>
+                                                        <p>{{ slide.caption.description }}</p>
+                                                    </div>
+                                                {% endfor %}
+                                                <!-- end of :: active slider album  -->
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <!-- Banner -->
+                                    <section id="banner">
+                                        {# Fetch response from method alias `slider` #}
+                                        {% set about = get('about') %}
+                                        <!-- begin of :: page subject,header, and cover for page key `about-us`  -->
+                                        <div class="content">
+                                            <header>
+                                                <h1>{{ about.subject }}</h1>
+                                            </header>
+                                            <p>{{ about.header }}</p>
+                                            <ul class="actions">
+                                                <li><a href="/{{ lang }}/page/about-us" class="button big">{{ trans('learn-more') }}</a></li>
+                                                <li><a href="/{{ lang }}/page/request-a-quote" class="button special big">{{ trans('request-quote') }}</a></li>
+                                            </ul>
+                                        </div>
+                                        <span class="image fit">
+                                            <img src="{{ about.cover.regular.url }}" alt="{{ about.subject }}" />
+                                        </span>
+                                        <!-- end of :: page subject,header, and cover for page key `about-us`  -->
+                                    </section>
+
+                                    <!-- Section -->
+                                    <section>
+                                        <header class="major">
+                                            <h2>{{ trans('latest-news') }}</h2>
+                                        </header>
+                                        <div class="features">
+                                            {# Fetch response from method alias `latest` #}
+                                            {% set latests = get('latest') %}
+                                            <!-- begin of :: latest news -->
+                                            {% for latest in latests %}
+                                                <article>
+                                                    <span class="icon fa-newspaper-o"></span>
+                                                    <div class="content">
+                                                        <h3><a href="/{{ lang }}/news/{{ latest.timestamp }}">{{ latest.subject }}</a></h3>
+                                                        <p>{{ latest.header }}</p>
+                                                        <ul class="actions">
+                                                            <li><a href="/{{ lang }}/news/{{ latest.key }}" class="button">{{ trans('learn-more') }}</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </article>
+                                            {% endfor %}
+                                            <!-- end of :: latest news -->
+                                        </div>
+                                    </section>
+
+                                    <!-- Section -->
+                                    <section>
+                                        <header class="major">
+                                            <h2>{{ trans('highlights') }}</h2>
+                                        </header>
+                                        <div class="posts">
+                                            {# Fetch response from method alias `special` #}
+                                            {% set specials = get('special') %}
+                                            <!-- begin of :: only special pages  -->
+                                            {% for special in specials %}
+                                                <article>
+                                                    <a href="/{{ lang }}/page/{{ special.key }}" class="image"><img src="{{ special.cover.regular.url }}" alt="" /></a>
+                                                    <h3>{{ special.subject }}</h3>
+                                                    <p>{{ special.header }}</p>
+                                                    <ul class="actions">
+                                                        <li><a href="/{{ lang }}/page/{{ special.key }}" class="button">{{ trans('learn-more') }}</a></li>
+                                                    </ul>
+                                                </article>
+                                            {% endfor %}
+                                            <!-- end of :: only special pages  -->
+                                        </div>
+                                    </section>
+
+                            </div>
+                        </div>
+
+    {% endblock %}
+
+    {# Print footer block #}
+    {{ block('footer') }}
+
+{% endblock %}

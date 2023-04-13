@@ -1,0 +1,196 @@
+{# Used to disable css/js cache in debug mode (simply append `?v={{ uid }}` to css/js files) #}
+{% set uid = 1 %}
+{% if debug %}
+	{% set uid = random() %}
+{% endif %}
+
+{# Global API methods, mostly reused in header and footer blocks #}
+{% set data = [
+    {
+        "alias": "app",
+        "method": "get.app",
+        "select": [
+            "title",
+            "meta",
+            "social",
+            "languages",
+            "currency"
+        ]
+    },
+    {
+        "alias": "nav",
+        "method": "get.pages",
+        "select": [
+            "key",
+            "subject"
+        ]
+    },
+    {
+        "alias": "quote",
+        "method": "get.page",
+        "key": "request-a-quote",
+        "select": [
+            "subject",
+            "header",
+            "cover"
+        ]
+    },
+    {
+        "alias": "locations",
+        "method": "get.locations",
+        "select": [
+            "address",
+		        "latitude",
+		        "longitude"
+        ]
+    },
+    {
+        "alias": "contacts",
+        "method": "get.contacts",
+        "select": [
+            "name",
+            "email"
+        ]
+    }
+] %}
+
+{# Extend API methods for current module #}
+{% if module == 'home' %}
+	{% set data = data|merge([
+		{
+		    "alias": "slider",
+		    "method": "get.albums.schedule",
+		    "limit": 2,
+		    "select": [
+		        "caption",
+		        "thumbnail",
+		        "original"
+		    ]
+		},
+		{
+		    "alias": "about",
+		    "method": "get.page",
+		    "key": "about-us",
+		    "select": [
+		        "subject",
+		        "header",
+		        "cover"
+		    ]
+		},
+		{
+		    "alias": "latest",
+		    "method": "get.news",
+		    "limit": 2,
+		    "select": [
+		        "subject",
+		        "header"
+		    ]
+		},
+		{
+		    "alias": "special",
+		    "method": "get.pages.special",
+		    "limit": 2,
+		    "select": [
+		        "subject",
+		        "header",
+		        "cover"
+		    ]
+		}
+	]) %}
+{% elseif module == 'page' %}
+	{% set data = data|merge([
+		{
+		    "alias": "page",
+		    "method": "get.page",
+		    "key": child_id,
+		    "select": [
+		    		"model",
+		        "subject",
+		        "header",
+		        "cover",
+		        "blocks"
+		    ]
+		}
+	]) %}
+{% elseif module == 'news' %}
+	{% if child_id != '' %}
+		{% set data = data|merge([
+			{
+			    "alias": "news",
+			    "method": "get.news",
+			    "start_date": child_id,
+			    "limit": 1,
+			    "select": [
+		    		"date",
+		        "subject",
+		        "header",
+		        "cover",
+		        "blocks"
+		    	],
+			    "date_format": "D j M, Y"
+			}
+		]) %}
+	{% else %}
+		{% set data = data|merge([
+			{
+			    "alias": "allnews",
+			    "method": "get.news",
+			    "select": [
+			        "subject",
+			        "header"
+			    ],
+			    "date_format": "D j M, Y"
+			}
+		]) %}
+	{% endif %}
+{% elseif module == 'album' %}
+	{% if child_id != '' and extra_id != '' %}
+		{% set data = data|merge([
+			{
+			    "alias": "album",
+			    "method": "get.album",
+			    "label": extra_id|url_decode,
+			    "select": [
+		    		"caption",
+		        "thumbnail",
+		        "regular",
+		        "url"
+		    	]
+			}
+		]) %}
+	{% else %}
+		{% set data = data|merge([
+			{
+			    "alias": "albums",
+			    "method": "get.albums",
+			    "select": [
+		    		"media",
+		        "label",
+		        "cover"
+		    	]
+			}
+		]) %}
+	{% endif %}
+{% elseif module == 'contact' %}
+	{% set data = data|merge([
+		{
+		    "alias": "token",
+		    "method": "get.form.token",
+		    "key": "contact"
+		}
+	]) %}
+{% elseif module == 'search' %}
+	{% set data = data|merge([
+		{
+		    "alias": "search",
+		    "method": "get.search.results",
+		    "keyword": child_id
+		}
+	]) %}
+{% endif %}
+    
+{# Make API request only once per template #}
+{% set req = call(data|json_encode()) %}
+
+{# Define a wrapper block to be used later on each module template #}
+{% block api %}{% endblock %}

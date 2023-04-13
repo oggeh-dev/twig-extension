@@ -1,0 +1,35 @@
+{# Import global wrapper #}
+{% extends 'api.twig' %}
+
+{% block api %}
+    
+    {# Fetch response from method alias `app` to be used accross all blocks #}
+    {% set app = get('app') %}
+
+    {# Reuse common blocks (i.e. header and footer) #}
+    {% use 'blocks.twig' %}
+
+    {# Print header block #}
+    {{ block('header') }}
+
+    {# Print content block #}
+    {% block content  %}
+
+                            <section>
+                                <header class="main">
+                                    <h1>404</h1>
+                                    <blockquote>
+                                      <p>{{ trans('page-not-found') }}</p>
+                                      {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                      {#<a href="/{{ lang }}">{{ trans('back-to-home') }}</a>#}
+                                      <a href="?lang={{ lang }}">{{ trans('back-to-home') }}</a>
+                                    </blockquote>
+                                </header>
+                            </section>
+
+    {% endblock %}
+
+    {# Print footer block #}
+    {{ block('footer') }}
+
+{% endblock %}

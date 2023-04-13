@@ -1,0 +1,236 @@
+{# Import global wrapper #}
+{% extends 'api.twig' %}
+
+{% block api %}
+    
+    {# Fetch response from method alias `app` to be used accross all blocks #}
+    {% set app = get('app') %}
+
+    {# Reuse common blocks (i.e. header and footer) #}
+    {% use 'blocks.twig' %}
+
+    {# Print header block #}
+    {{ block('header') }}
+
+    {# Print content block #}
+    {% block content  %}
+
+                          {% if child_id != '' %}
+                            <section>
+                              {# Fetch response from method alias `news` #}
+                              {% set news = get('news') %}
+                              {% set news = news[0] %}
+                              <header class="main">
+                                <h1>
+                                  <!-- begin of :: news subject for news start date matches url $param1 -->
+                                  {{ news.subject }}
+                                  <!-- end of :: news subject for news start date matches url $param1 -->
+                                </h1>
+                                <blockquote>
+                                  <!-- begin of :: news post date for news start date matches url $param1 -->
+                                  {{ news.date }}
+                                  <!-- end of :: news post date for news start date matches url $param1 -->
+                                </blockquote>
+                              </header>
+                              <hr class="major" />
+                              <div class="row">
+                                <div class="cover 12u">
+                                  <!-- begin of :: news cover for news start date matches url $param1 -->
+                                  <span class="image main"><img src="{% if news.cover.original.url != '' %}{{ news.cover.original.url }}{% else %}data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMTAvMjUvMTcYFuBOAAAADUlEQVQImWP4//8/AwAI/AL+hc2rNAAAAABJRU5ErkJggg=={% endif %}" alt="" /></span>
+                                  <!-- end of :: news cover for news start date matches url $param1 -->
+                                  <div class="summary">
+                                    <p>
+                                      <!-- begin of :: news header for news start date matches url $param1 -->
+                                      {{ news.header }}
+                                      <!-- end of :: news header for news start date matches url $param1 -->
+                                    </p>
+                                  </div>
+                                </div>
+                                <!-- begin of :: all news blocks for news start date matches url $param1 -->
+                                {% for block in news.blocks %}
+                                  {% if block.type == 'rte' %}
+                                    <article class="{{ block.size_x }}u 12u$(small)">
+                                      <p>
+                                        {{ block.html|raw }}
+                                      </p>
+                                    </article>
+                                  {% elseif block.type == 'media' %}
+                                    <article class="{{ block.size_x }}u 12u$(small)">
+                                      <div class="box alt">
+                                        <div class="row 50% uniform">
+                                    {% for item in block.media %}
+                                      {% if item.type == 'photo' %}
+                                          <div class="4u 12u$(small)">
+                                            <span class="image fit">
+                                              <a href="{{ item.regular.url }}" data-title="{{ item.caption.title }}" data-lightbox="consistent">
+                                                <img src="{{ item.thumbnail.url }}" alt="{{ item.caption.title }}" />
+                                              </a>
+                                              <span>{{ item.caption.title }}</span>
+                                              <p>{{ item.caption.description }}</p>
+                                            </span>
+                                          </div>
+                                      {% elseif item.type == 'audio' %}
+                                          <div class="4u 12u$(small)">
+                                            <span class="audio image fit">
+                                              <img src="{{ item.regular.url }}" alt="{{ item.caption.title }}" />
+                                              <audio controls>
+                                                <source src="{{ item.url }}" type="audio/mpeg">
+                                              </audio>
+                                              <span>{{ item.caption.title }}</span>
+                                              <p>{{ item.caption.description }}</p>
+                                            </span>
+                                          </div>
+                                      {% elseif item.type == 'video' %}
+                                          <div class="12u">
+                                            <span class="video image fit">
+                                              <img src="{{ item.regular.url }}" alt="{{ item.caption.title }}" />
+                                              <iframe data-src="{{ item.url|replace({'/watch?v=': '/embed/'}) }}?autoplay=1" allowfullscreen="allowfullscreen"></iframe>
+                                              <span>{{ item.caption.title }}</span>
+                                              <p>{{ item.caption.description }}</p>
+                                            </span>
+                                          </div>
+                                      {% endif %}
+                                    {% endfor %}
+                                        </div>
+                                      </div>
+                                    </article>
+                                  {% elseif block.type == 'files' %}
+                                    {% for item in block.files %}
+                                      <article class="{{ block.size_x }}u 12u$(small)">
+                                      <ul class="alt">
+                                        <li>
+                                          <a href="{{ item.url }}">{{ item.caption.title }}</a>
+                                          <p>{{ item.caption.description }}</p>
+                                        </li>
+                                      </ul>
+                                    </article>
+                                    {% endfor %}
+                                  {% elseif block.type == 'table' %}
+                                    <article class="{{ block.size_x }}u 12u$(small)">
+                                      <div class="table-wrapper">
+                                        <table>
+                                          {% for row in block.table %}
+                                          <tr>
+                                            {% for col in row %}
+                                            <td>{{ col }}</td>
+                                            {% endfor %}
+                                          </tr>
+                                          {% endfor %}
+                                        </table>
+                                      </div>
+                                    </article>
+                                  {% elseif block.type == 'form' %}
+                                    <div class="row uniform">
+                                      <form method="post" action="https://api.oggeh.com?api_key=57ff136718d176aae148c8ce9aaf6817&lang={{ lang }}" data-success="{{ trans('form-success') }}" data-error="{{ trans('form-error') }}" enctype="multipart/form-data">
+                                        <input type="hidden" name="method" value="post.page.form">
+                                        <input type="hidden" name="key" value="{{ child_id }}">
+                                        <input type="hidden" name="token" value="{{ block.token }}">
+                                        {% for field in block.form %}
+                                          {% if field.type == 'text' and field.subtype == 'text' %}
+                                            <article class="12u">
+                                              <label for="{{ field.name }}">{{ field.label }}</label>
+                                              <input type="text" name="{{ field.name }}"{% if field.required %} class="validate-required" required{% endif %}>
+                                            </article>
+                                          {% elseif field.type == 'select' %}
+                                            <article class="12u$">
+                                              <label for="{{ field.name }}">{{ field.label }}</label>
+                                              <div class="select-wrapper">
+                                                <select name="{{ field.name }}"{% if field.required %} class="validate-required" required{% endif %}{% if field.multiple %} multiple{% endif %}>
+                                                  {% for option in field.options %}
+                                                  <option value="{{ option.value }}">{{ option.label }}</option>
+                                                  {% endfor %}
+                                                </select>
+                                              </div>
+                                            </article>
+                                          {% elseif field.type == 'radio-group' %}
+                                              {% for option in field.options %}
+                                                <article class="4u 12u$(small)">
+                                                  <input type="radio" name="{{ field.name }}" value="{{ option.value }}"{% if field.required %} class="validate-required" required{% endif %}>
+                                                  <label for="{{ field.name }}">{{ option.label }}</label>
+                                                </article>
+                                              {% endfor %}
+                                          {% elseif field.type == 'checkbox' %}
+                                            <article class="4u 12u$(small)">
+                                              <input type="checkbox" name="{{ field.name }}"{% if field.required %} class="validate-required" required{% endif %}>
+                                              <label for="{{ field.name }}"{% if field.toggle %} class="input-checkbox--switch"{% endif %}>{{ field.label }}</label>
+                                            </article>
+                                          {% elseif field.type == 'checkbox-group' %}
+                                              {% for option in field.options %}
+                                                <article class="4u 12u$(small)">
+                                                  <input type="checkbox" name="{{ field.name }}[]" value="{{ option.value }}"{% if field.required %} class="validate-required" required{% endif %}>
+                                                  <label for="{{ field.name }}[]">{{ option.label }}</label>
+                                                </article>
+                                              {% endfor %}
+                                          {% elseif field.type == 'date' %}
+                                            <article class="12u">
+                                              <label for="{{ field.name }}">{{ field.label }}</label>
+                                              <input type="date" name="{{ field.name }}" class="datepicker{% if field.required %} validate-required{% endif %}"{% if field.required %} required{% endif %}>
+                                            </article>
+                                          {% elseif field.type == 'textarea' %}
+                                            <article class="12u">
+                                              <label for="{{ field.name }}">{{ field.label }}</label>
+                                              <textarea name="{{ field.name }}"{% if field.required %} class="validate-required" required{% endif %}></textarea>
+                                            </article>
+                                          {% elseif field.type == 'header' or field.type == 'paragraph' %}
+                                            <article class="12u">
+                                              <{{ field.subtype }}>{{ field.label }}</{{ field.subtype }}>
+                                            </article>
+                                          {% elseif field.type == 'hr' %}
+                                            <article class="12u">
+                                              <hr>
+                                            </article>
+                                          {% else %}
+                                            <article class="12u">
+                                              <input type="{{ field.type }}" name="{{ field.name }}"{% if field.required %} class="validate-required" required{% endif %}>
+                                              <label for="{{ field.name }}">{{ field.label }}</label>
+                                            </article>
+                                          {% endif %}
+                                        {% endfor %}
+                                        <article class="12u">
+                                          <ul class="actions">
+                                            <li><input type="submit" value="{{ trans('submit') }}" class="special" /></li>
+                                            <li><input type="reset" value="{{ trans('reset') }}" /></li>
+                                          </ul>
+                                        </article>
+                                      </form>
+                                    </div>
+                                  </div>
+                                  {% endif %}
+                                {% endfor %}
+                                <!-- end of :: all news blocks for news start date matches url $param1 -->
+                              </div>
+                            </section>
+                          {% else %}
+                            <section>
+                              <header class="main">
+                                <h1>{{ trans('all-news') }}</h1>
+                              </header>
+                              <div class="row">
+                                {# Fetch response from method alias `allnews` #}
+                                {% set news = get('allnews') %}
+                                <!-- begin of :: all news subject and header -->
+                                {% for item in news %}
+                                  <article class="6u 12u$(small)">
+                                      <h3>
+                                          {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                          {#<a href="/{{ lang }}/news/{{ item.timestamp }}">{{ item.subject }}</a>#}
+                                          <a href="?lang={{ lang }}&module=news&param1={{ item.timestamp }}">{{ item.subject }}</a>
+                                      </h3>
+                                      <blockquote>{{ item.date }}</blockquote>
+                                      <p>{{ item.header }}</p>
+                                      {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                      {#<a href="/{{ lang }}/news/{{ item.timestamp }}" class="button">{{ trans('continue-reading') }} &raquo;</a>#}
+                                      <a href="?lang={{ lang }}&module=news&param1={{ item.timestamp }}" class="button">{{ trans('continue-reading') }} &raquo;</a>
+                                  </article>
+                                {% endfor %}
+                                <!-- end of :: all news subject and header -->
+                              </div>
+                            </section>
+                          {% endif %}
+
+    {% endblock %}
+
+    {# Print footer block #}
+    {{ block('footer') }}
+
+{% endblock %}

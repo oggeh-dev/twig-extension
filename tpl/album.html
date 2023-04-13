@@ -1,0 +1,147 @@
+{# Import global wrapper #}
+{% extends 'api.twig' %}
+
+{% block api %}
+    
+    {# Fetch response from method alias `app` to be used accross all blocks #}
+    {% set app = get('app') %}
+
+    {# Reuse common blocks (i.e. header and footer) #}
+    {% use 'blocks.twig' %}
+
+    {# Print header block #}
+    {{ block('header') }}
+
+    {# Print content block #}
+    {% block content  %}
+
+                        {% if child_id != '' and extra_id != '' %}
+                          <section>
+                            <header class="main">
+                              <h1>{{ extra_id|url_decode }}</h1>
+                            </header>
+                            <hr class="major" />
+                            <div class="row">
+                              {# Fetch response from method alias `album` #}
+                              {% set album = get('album') %}
+                              {% set album = album[0] %}
+                              <!-- begin of :: album items for album label matches url $param2 -->
+                              {% if album.media == 'photos' %}
+                                {% for item in album.items %}
+                                  <div class="3u 12u$(small)">
+                                    <span class="image fit">
+                                      <a href="{{ item.regular.url }}" data-title="{{ item.caption.title }}" data-lightbox="consistent">
+                                        <img src="{{ item.thumbnail.url }}" alt="{{ item.caption.title }}" />
+                                      </a>
+                                      <span>{{ item.caption.title }}</span>
+                                      <p>{{ item.caption.description }}</p>
+                                    </span>
+                                  </div>
+                                {% endfor %}
+                              {% elseif album.media == 'audio' %}
+                                <div class="row uniform">
+                                  <ul class="alt">
+                                    {% for item in album.items %}
+                                      <li>
+                                          <audio controls>
+                                            <source src="{{ item.url }}" type="audio/mpeg">
+                                          </audio>
+                                          <span>{{ item.caption.title }}</span>
+                                          <p>{{ item.caption.description }}</p>
+                                      </li>
+                                    {% endfor %}
+                                  </ul>
+                                </div>
+                              {% elseif album.media == 'videos' %}
+                                {% for item in album.items %}
+                                  <div class="4u 12u$(small)">
+                                    <div class="video">
+                                      <iframe src="{{ item.url|replace({'/watch?v=': '/embed/'}) }}" allowfullscreen="allowfullscreen"></iframe>
+                                    </div>
+                                    <span>{{ item.caption.title }}</span>
+                                    <p>{{ item.caption.description }}</p>
+                                  </div>
+                                {% endfor %}
+                              {% elseif album.media == 'files' %}
+                                <div class="row uniform">
+                                  <ul class="alt">
+                                    {% for item in album.items %}
+                                      <li>
+                                          <a href="{{ item.url }}">{{ item.caption.title }}</a>
+                                          <p>{{ item.caption.description }}</p>
+                                      </li>
+                                    {% endfor %}
+                                  </ul>
+                                </div>
+                              {% endif %}
+                              <!-- end of :: album items for album label matches url $param2 -->
+                            </div>
+                          </section>
+                        {% else %}
+                          <section>
+                              <header class="main">
+                                <h1>{{ trans('album') }}</h1>
+                              </header>
+                              <hr class="major" />
+                              <div class="row">
+                                {# Fetch response from method alias `albums` #}
+                                {% set albums = get('albums') %}
+                                <!-- begin of :: all albums label and cover photo -->
+                                {% for album in albums %}
+                                  {% if album.media == 'photo' %}
+                                    <article class="4u 12u$(small)">
+                                      {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                      {#<a href="/{{ lang }}/album/photo/{{ album.label }}">#}
+                                      <a href="?lang={{ lang }}&module=album&param1=photo&param2={{ album.label }}">
+                                        <span class="album image fit">
+                                          <img src="{% if album.cover.regular.url != '' %}{{ album.cover.regular.url }}{% else %}/images/rotator.php{% endif %}" alt="{{ album.label }}" />
+                                          <span>{{ album.label }}</span>
+                                        </span>
+                                      </a>
+                                    </article>
+                                  {% elseif album.media == 'audio' %}
+                                    <article class="4u 12u$(small)">
+                                      {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                      {#<a href="/{{ lang }}/album/audio/{{ album.label }}">#}
+                                      <a href="?lang={{ lang }}&module=album&param1=audio&param2={{ album.label }}">
+                                        <span class="album image fit">
+                                          <img src="{% if album.cover.regular.url != '' %}{{ album.cover.regular.url }}{% else %}/images/rotator.php{% endif %}" alt="{{ album.label }}" />
+                                          <span>{{ album.label }}</span>
+                                        </span>
+                                      </a>
+                                    </article>
+                                  {% elseif album.media == 'video' %}
+                                    <article class="4u 12u$(small)">
+                                      {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                      {#<a href="/{{ lang }}/album/video/{{ album.label }}">#}
+                                      <a href="?lang={{ lang }}&module=album&param1=video&param2={{ album.label }}">
+                                        <span class="album image fit">
+                                          <img src="{% if album.cover.regular.url != '' %}{{ album.cover.regular.url }}{% else %}/images/rotator.php{% endif %}" alt="{{ album.label }}" />
+                                          <span>{{ album.label }}</span>
+                                        </span>
+                                      </a>
+                                    </article>
+                                  {% elseif album.media == 'file' %}
+                                    <article class="4u 12u$(small)">
+                                      {# use the following instead to enable rewrite settings (rename htaccess.txt to .htaccess) #}
+                                      {#<a href="/{{ lang }}/album/file/{{ album.label }}">#}
+                                      <a href="?lang={{ lang }}&module=album&param1=file&param2={{ album.label }}">
+                                        <span class="album image fit">
+                                          <img src="{% if album.cover.regular.url != '' %}{{ album.cover.regular.url }}{% else %}/images/rotator.php{% endif %}" alt="{{ album.label }}" />
+                                          <span>{{ album.label }}</span>
+                                        </span>
+                                      </a>
+                                    </article>
+                                  {% endif %}
+                                {% endfor %}
+                                <!-- end of :: all albums label and cover photo -->
+                            </div>
+                          </section>
+                        {% endif %}
+
+    {% endblock %}
+
+    {# Print footer block #}
+    {{ block('footer') }}
+
+{% endblock %}
