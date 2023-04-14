@@ -8,6 +8,8 @@
 	 */
 	
 	require_once 'vendor/autoload.php';
+	$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+	$dotenv->load();
 	//Twig_Autoloader::register(); // uncomment for php 5.3
 	$loader = new Twig_Loader_Filesystem('tpl');
 	$debug = true; // set to true for debug
@@ -78,13 +80,13 @@
 	/**
 	 * Configure Developer Access
 	 */
-	OGGEH::configure('domain', 'domain.ltd');
-	OGGEH::configure('api_key', '57ff136718d176aae148c8ce9aaf6817');
+	OGGEH::configure('domain', $_ENV['OGGEH_APP_DOMAIN']);
+	OGGEH::configure('api_key', $_ENV['OGGEH_APP_API_KEY']);
 	OGGEH::configure('lang', $url_lang);
 	//OGGEH::configure('rewrite', true); // uncomment to enable rewrite settings (rename htaccess.txt to .htaccess)
 	if ($debug) {
 		// Enable development environment
-		OGGEH::configure('sandbox_key', '39e55bb297b9943cfdab5d77cbf4f374');
+		OGGEH::configure('sandbox_key', $_ENV['OGGEH_APP_SANDBOX_KEY']);
 		OGGEH::configure('sandbox', true);
 	}
 	OGGEH::configure('i18n', array(
@@ -216,6 +218,7 @@
 	}
 	echo $twig->render($url_module.'.html', array(
 		'debug'=>$debug,
+		'gmaps_key'=>$_ENV['GMAPS_KEY'],
 		'uri'=>$uri,
 		'lang'=>$url_lang,
 		'dir'=>$direction,
